@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Costos | BOA FX</title>
+  <style>
+    :root {
+      --rojo: #e50914;
+      --blanco: #ffffff;
+      --gris: #1a1a1a;
+      --gris-claro: #2b2b2b;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background-color: #000;
+      color: var(--blanco);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 30px 15px;
+    }
+
+    img.logo {
+      width: 180px;
+      max-width: 60%;
+      margin-bottom: 25px;
+      animation: fadeIn 1s ease-out;
+    }
+
+    h1 {
+      color: var(--rojo);
+      text-align: center;
+      margin-bottom: 25px;
+      letter-spacing: 1px;
+    }
+
+    .panel {
+      background-color: var(--gris);
+      padding: 25px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--blanco);
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--rojo);
+      background-color: var(--gris-claro);
+      color: var(--blanco);
+      font-size: 16px;
+      outline: none;
+      margin-bottom: 15px;
+    }
+
+    input:focus {
+      border-color: var(--blanco);
+    }
+
+    button {
+      width: 100%;
+      background-color: var(--rojo);
+      color: var(--blanco);
+      border: none;
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #ff1a1a;
+      transform: scale(1.02);
+    }
+
+    .resultado {
+      margin-top: 25px;
+      background-color: var(--gris-claro);
+      border-left: 4px solid var(--rojo);
+      border-radius: 8px;
+      padding: 20px;
+      font-size: 15px;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .resultado b {
+      color: var(--rojo);
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #777;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.3rem;
+      }
+
+      .panel {
+        padding: 20px;
+      }
+
+      button {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <img src="logo boa fx.png" alt="BOA FX" class="logo" />
+  <h1>Calculadora de Costos</h1>
+
+  <div class="panel">
+    <label for="peso">Peso del molde final (en gramos):</label>
+    <input id="peso" type="number" placeholder="Ejemplo: 250" />
+
+    <button onclick="calcularCosto()">Calcular</button>
+
+    <div id="resultado" class="resultado"></div>
+  </div>
+
+  <footer>© 2025 BOA FX — Cálculo estimado de materiales</footer>
+
+  <script>
+    // ---- SONIDO BEEP DIGITAL ----
+    function beep() {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'square';
+      osc.frequency.value = 800; // tono
+      gain.gain.value = 0.1; // volumen
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+
+      setTimeout(() => {
+        osc.stop();
+        ctx.close();
+      }, 120); // duración del beep
+    }
+
+    // ---- CÁLCULO ----
+    function calcularCosto() {
+      beep(); // 🔊 sonido al presionar Calcular
+
+      const COSTO_SILICONA_G = 3.63;
+      const COSTO_ULTRACAL_KG = 36.08;
+      const COSTO_GLATZAN_ML = 3.16;
+      const MARGEN_GANANCIA = 0.40;
+
+      const ULTRACAL_CANTIDAD_KG = 1.5;
+      const GLATZAN_CANTIDAD_ML = 5.0;
+
+      const pesoMolde = parseFloat(document.getElementById("peso").value);
+      const resultado = document.getElementById("resultado");
+
+      if (isNaN(pesoMolde) || pesoMolde <= 0) {
+        resultado.textContent = "⚠️ Por favor ingrese un número válido para el peso del molde.";
+        return;
+      }
+
+      const pesoSilicona = pesoMolde * 0.7;
+      const costoSilicona = pesoSilicona * COSTO_SILICONA_G;
+      const costoUltracal = ULTRACAL_CANTIDAD_KG * COSTO_ULTRACAL_KG;
+      const costoGlatzan = GLATZAN_CANTIDAD_ML * COSTO_GLATZAN_ML;
+      const costoTotal = costoSilicona + costoUltracal + costoGlatzan;
+      const precioFinal = costoTotal * (1 + MARGEN_GANANCIA);
+
+      resultado.innerHTML = `
+<b> Materiales utilizados:</b>
+Silicona (A+B+Slacker): ${pesoSilicona.toFixed(2)} g  
+Ultracal (Molde): ${ULTRACAL_CANTIDAD_KG.toFixed(1)} kg  
+Glatzan (Unidad): ${GLATZAN_CANTIDAD_ML.toFixed(1)} ml
+
+<b>❌ Costo real de materiales:</b> $${costoTotal.toFixed(2)} MXN  
+🚨 Vender a este precio o menos resultará en una pérdida neta de su tiempo y esfuerzo. No acepte menos de lo que merece.
+<b>✅ Precio de venta sugerido:</b>  
+Margen aplicado: ${MARGEN_GANANCIA * 100}%  
+💰 <b>Precio final sugerido:</b> $${precioFinal.toFixed(2)} MXN
+      `;
+    }
+  </script>
+</body>
+</html>
